@@ -60,6 +60,11 @@ curl -fsSLo ./sops "https://github.com/getsops/sops/releases/download/${SOPS_VER
 sudo install -m 755 ./sops /usr/local/bin/sops
 rm ./sops
 
+echo "Installing kustomize..."
+curl -fsSL "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+sudo install -m 755 ./kustomize /usr/local/bin/kustomize
+rm ./kustomize
+
 echo "Installing kubeseal..."
 KUBESEAL_VERSION=$(curl -fsSL https://api.github.com/repos/bitnami-labs/sealed-secrets/releases/latest | grep tag_name | cut -d '"' -f 4)
 curl -fsSLo ./kubeseal.tar.gz "https://github.com/bitnami-labs/sealed-secrets/releases/download/${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION#v}-linux-amd64.tar.gz"
@@ -89,6 +94,7 @@ echo "  age:      $(age --version 2>/dev/null)"
 echo "  kubeseal: $(kubeseal --version 2>/dev/null)"
 echo "  vault:    $(vault version 2>/dev/null)"
 echo "  cloudflared: $(cloudflared version 2>/dev/null | head -1)"
+echo "  kustomize: $(kustomize version 2>/dev/null)"
 echo "  kubelogin: $(kubectl-oidc_login --version 2>/dev/null | head -1)"
 echo ""
 echo "Quick verification:"
