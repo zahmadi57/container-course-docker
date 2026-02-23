@@ -148,6 +148,8 @@ kubectl exec dns-probe -- nslookup kubernetes.default.svc.cluster.local
 kubectl exec dns-probe -- nslookup svc-demo-clusterip.default.svc.cluster.local || true
 ```
 
+If `svc-demo-clusterip` does not exist in your cluster, expect `NXDOMAIN` on the second lookup. That is a healthy DNS response for a missing name, not a CoreDNS outage.
+
 Notice: `kubernetes.default.svc.cluster.local` is the canonical baseline check because it should exist in every cluster. The second lookup may fail if that Service is absent, but the key signal is that DNS resolution itself works before injection.
 
 Operator mindset: prove a known-good baseline before introducing failure.
