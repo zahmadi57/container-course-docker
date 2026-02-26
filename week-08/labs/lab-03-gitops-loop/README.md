@@ -188,6 +188,16 @@ ArgoCD is doing the following in sequence:
 3. Comparing the output against the cluster (nothing exists yet — everything is new)
 4. Applying the diff — creating the namespace, Deployment, Service, ConfigMap, and ServiceAccount
 
+The app references a `vault-token` secret for its Vault integration. Vault is not set up until Lab 4 — create a placeholder now so the pod can start:
+
+```bash
+kubectl create secret generic vault-token \
+  --from-literal=token=placeholder \
+  -n portfolio
+```
+
+The app handles Vault being unavailable gracefully. You will see `vault: disconnected` in the `/api/status` response — this is expected and intentional until Lab 4.
+
 Watch the pods come up:
 
 ```bash
