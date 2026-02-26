@@ -334,6 +334,33 @@ Notice: the green checkmarks map exactly to the tools you just ran locally. CI i
 
 Operator mindset: if you cannot reproduce a CI failure locally, you do not understand it well enough to fix it reliably.
 
+### The image tag update
+
+After the pipeline goes green, look at your fork's commit history. You will see a new commit from `github-actions[bot]` with a message like:
+
+```
+ci: update image tag to sha-abc1234
+```
+
+This is the `update-tag` job (Job 8) writing back to your repository. It ran:
+
+```bash
+kustomize edit set image ghcr.io/OWNER/devops-portfolio=ghcr.io/<YOUR_GITHUB_USERNAME>/devops-portfolio:sha-abc1234
+```
+
+Open `k8s/base/kustomization.yaml` and confirm the image entry now points to your username and the new SHA:
+
+```yaml
+images:
+- name: ghcr.io/OWNER/devops-portfolio
+  newName: ghcr.io/<YOUR_GITHUB_USERNAME>/devops-portfolio
+  newTag: sha-abc1234
+```
+
+You do not need to edit this file manually. CI owns it. Every time a commit merges to `main` and the pipeline passes, CI updates this file with the new image SHA. ArgoCD reads this file from Git and deploys whatever tag is written there — this is the link between your CI pipeline and your GitOps deployment.
+
+Notice: **do not manually edit `k8s/base/kustomization.yaml` to change the image tag**. That is CI's job. If you push a manual change, CI will overwrite it on the next run anyway.
+
 ### Make your container image public
 
 After the pipeline goes green, the `push` and `update-tag` jobs will have published your image to GitHub Container Registry (GHCR) and committed the new image SHA back to `k8s/base/kustomization.yaml`.
